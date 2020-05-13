@@ -156,10 +156,10 @@ Resources:
   WebAppTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      HealthCheckIntervalSeconds: 35 # The time it takes to determine a non-responsive target is unhealthy
+      HealthCheckIntervalSeconds: 10 # The time it takes to determine a non-responsive target is unhealthy
       HealthCheckPath: /            # The ping path that is the destination on the targets for health checks.
       HealthCheckProtocol: HTTP
-      HealthCheckTimeoutSeconds: 30
+      HealthCheckTimeoutSeconds: 8
       HealthyThresholdCount: 2  # the number of healthy checks required to change the healthStatus
       Port: 80  # The port where our targets receive traffic
       Protocol: HTTP
@@ -168,9 +168,9 @@ Resources:
         Fn::ImportValue:
           Fn::Sub: "${EnvironmentName}-VPCID"
 
-Outputs:
-  WebAppLB:
-    Description: A reference to the APP's URL Link
-    Value: !Join [ "", [ "http://", !GetAtt WebAppLB.DNSName]]
-    Export:
-      Name: !Sub ${EnvironmentName}-URL
+  Outputs:
+    WebAppLB:
+      Description: A reference to the APP's URL Link
+      Value: !Join [ "", [ "http://", !GetAtt WebAppLB.DNSName]]
+      Export:
+        Name: "URL"
