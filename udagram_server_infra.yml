@@ -25,7 +25,7 @@ Resources:
             Principal:
               Service: ec2.amazonaws.com
             Action:
-            - sts:AssumeRole
+              - sts:AssumeRole
       Path: /
 
   RolePolicies:
@@ -69,8 +69,8 @@ Resources:
           !Sub "${EnvironmentName}-VPCID"
       SecurityGroupIngress:
         - IpProtocol: tcp
-          FromPort: 8080
-          ToPort: 8080
+          FromPort: 80
+          ToPort: 80
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
           FromPort: 22
@@ -156,22 +156,21 @@ Resources:
   WebAppTargetGroup:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
-      HealthCheckIntervalSeconds: 10 # The time it takes to determine a non-responsive target is unhealthy
+      HealthCheckIntervalSeconds: 35 # The time it takes to determine a non-responsive target is unhealthy
       HealthCheckPath: /            # The ping path that is the destination on the targets for health checks.
       HealthCheckProtocol: HTTP
-      HealthCheckTimeoutSeconds: 8
+      HealthCheckTimeoutSeconds: 30
       HealthyThresholdCount: 2  # the number of healthy checks required to change the healthStatus
-      Port: 8080  # The port where our targets receive traffic
+      Port: 80  # The port where our targets receive traffic
       Protocol: HTTP
       UnhealthyThresholdCount: 5 # threshold | the number of unhealthy checks required to change the health status
       VpcId:
         Fn::ImportValue:
           Fn::Sub: "${EnvironmentName}-VPCID"
 
-  Outputs:
-    WebAppLB:
-      Description: A reference to the APP's URL Link
-      Value: !Join [ "", [ "http://", !GetAtt WebAppLB.DNSName]]
-      Export:
-        Name: "URL"
-
+Outputs:
+  WebAppLB:
+    Description: A reference to the APP's URL Link
+    Value: !Join [ "", [ "http://", !GetAtt WebAppLB.DNSName]]
+    Export:
+      Name: !Sub ${EnvironmentName}-URL
